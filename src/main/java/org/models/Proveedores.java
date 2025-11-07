@@ -11,12 +11,15 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TiposDeUsuario {
 
+public class Proveedores {
     @Id
     @GeneratedValue
 
     public long identificador;
-    public String descripcion;
+    public String nombreComercial;
+    public String RNC;
+    public String fechaDeRegistro;
     public String estado;
+
 }
