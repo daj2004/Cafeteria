@@ -10,6 +10,10 @@ import org.models.Proveedores;
 
 import java.util.List;
 
+@Path("/api/proveedores")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+
 public class ProveedoresRecurso {
 
     @Inject

@@ -6,15 +6,15 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.models.Usuarios;
 import org.models.TiposDeUsuario;
 
 import java.util.List;
 
-@Path("/api/usuario")
+@Path("/api/usuarios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UsuariosRecurso
-{
+public class UsuariosRecurso {
 
     @Inject
     EntityManager entityManager;
@@ -23,24 +23,24 @@ public class UsuariosRecurso
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
-    public TiposDeUsuario crear(TiposDeUsuario usuario) {
+    public Usuarios crear(Usuarios usuario) {
         entityManager.persist(usuario);
         return usuario;
     }
 
 
     @GET
-    public List<TiposDeUsuario> listar() {
-        TypedQuery<TiposDeUsuario> query =
-                entityManager.createQuery("SELECT u FROM TiposDeUsuario u", TiposDeUsuario.class);
+    public List<Usuarios> listar() {
+        TypedQuery<Usuarios> query =
+                entityManager.createQuery("SELECT u FROM Usuarios u", Usuarios.class);
         return query.getResultList();
     }
 
 
     @GET
     @Path("/{id}")
-    public TiposDeUsuario obtenerPorId(@PathParam("id") Long id) {
-        TiposDeUsuario usuario = entityManager.find(TiposDeUsuario.class, id);
+    public Usuarios obtenerPorId(@PathParam("id") Long id) {
+        Usuarios usuario = entityManager.find(Usuarios.class, id);
         if (usuario == null) {
             throw new NotFoundException("Usuario con id " + id + " no encontrado");
         }
@@ -51,13 +51,31 @@ public class UsuariosRecurso
     @PUT
     @Path("/{id}")
     @Transactional
-    public TiposDeUsuario actualizar(@PathParam("id") Long id, TiposDeUsuario datos) {
-        TiposDeUsuario usuario = entityManager.find(TiposDeUsuario.class, id);
+    public Usuarios actualizar(@PathParam("id") Long id, Usuarios datos) {
+
+        Usuarios usuario = entityManager.find(Usuarios.class, id);
         if (usuario == null) {
             throw new NotFoundException("Usuario con id " + id + " no encontrado");
         }
-        usuario.descripcion = datos.descripcion;
-        usuario.estado = datos.estado;
+
+        usuario.setNombre(datos.getNombre());
+        usuario.setCedula(datos.getCedula());
+        usuario.setLimitedecredito(datos.getLimitedecredito());
+        usuario.setFechaDeRegistro(datos.getFechaDeRegistro());
+        usuario.setEstado(datos.getEstado());
+
+        // Actualizar tipo de usuario si viene en la petición
+        if (datos.getTipoDeUsuario() != null) {
+            Long tipoId = datos.getTipoDeUsuario().getIdentificador();
+            TiposDeUsuario tipo = entityManager.find(TiposDeUsuario.class, tipoId);
+
+            if (tipo == null) {
+                throw new NotFoundException("Tipo de usuario con id " + tipoId + " no existe");
+            }
+
+            usuario.setTipoDeUsuario(tipo);
+        }
+
         return usuario;
     }
 
@@ -66,10 +84,11 @@ public class UsuariosRecurso
     @Path("/{id}")
     @Transactional
     public void eliminar(@PathParam("id") Long id) {
-        TiposDeUsuario usuario = entityManager.find(TiposDeUsuario.class, id);
+        Usuarios usuario = entityManager.find(Usuarios.class, id);
         if (usuario == null) {
             throw new NotFoundException("Usuario con id " + id + " no encontrado");
         }
+
         entityManager.remove(usuario);
     }
 }

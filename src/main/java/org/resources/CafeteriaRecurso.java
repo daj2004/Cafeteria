@@ -10,7 +10,7 @@ import org.models.Cafeteria;
 
 import java.util.List;
 
-@Path("/api/Cafeteria")
+@Path("/api/cafeteria")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 
